@@ -158,11 +158,13 @@ contract Staking is
         StakerInfo storage stakerInfo,
         address _staker
     ) internal view returns (uint256 totalReward, uint256 newRewardPerToken) {
-        newRewardPerToken =
-            rewardPerToken +
-            ((rewardRate * (_lastApplicableTime() - lastUpdateTime)) *
-                1 ether) /
-            totalStaked;
+        if (totalStaked > 0) {
+            newRewardPerToken =
+                rewardPerToken +
+                ((rewardRate * (_lastApplicableTime() - lastUpdateTime)) *
+                    1 ether) /
+                totalStaked;
+        }
         totalReward =
             (stakerInfo.stakedAmount *
                 (newRewardPerToken - userRewardPerTokenPaid[_staker])) /
