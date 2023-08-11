@@ -181,19 +181,6 @@ contract Staking is
         return Math.min(block.timestamp, rewardFinishAt);
     }
 
-    /// @notice Owner's function to mint tokens for specific address
-    /// @param _amount The amount of tokens to be minted
-    /// @param _address The address of the receiver
-    function mint(uint256 _amount, address _address) external onlyOwner {
-        _mint(_address, _amount);
-    }
-
-    /// @notice Owner's function to burn tokens from his account
-    /// @param _amount The amount of tokens to be burned
-    function burn(uint256 _amount) external onlyOwner {
-        _burn(msg.sender, _amount);
-    }
-
     /// @notice Owner's function to pause the contract
     function pause() external onlyOwner {
         _pause();
