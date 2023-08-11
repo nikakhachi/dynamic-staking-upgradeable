@@ -57,7 +57,9 @@ contract Staking is
     function stake(uint256 _amount) external whenNotPaused {
         StakerInfo storage staker = stakers[msg.sender];
 
-        require(block.timestamp < rewardFinishAt);
+        /// @dev There's no check to make sure contract isn't giving rewards anymore.
+        /// @dev this is to save gas costs. Staker should see themselves if rewards is
+        /// @dev finished or not and act accordingly
 
         _handleRewards(staker);
 
