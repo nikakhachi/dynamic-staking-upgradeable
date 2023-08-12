@@ -32,6 +32,7 @@ contract Staking is
 
     uint256 public rewardRate; /// @dev Total Rewards / Duration
     uint256 public rewardFinishAt; /// @dev Timestamp when the rewards will stop being given out
+    uint256 public rewardStartTime; /// @dev Timestamp when the rewards were set
 
     mapping(address => StakerInfo) public stakers; /// @dev Staker info
 
@@ -126,6 +127,7 @@ contract Staking is
         rewardFinishAt = block.timestamp + _duration;
         rewardRate = _amount / _duration;
         lastUpdateTime = block.timestamp;
+        rewardStartTime = block.timestamp;
     }
 
     /// @dev Calculates the rewards and handles them (updating states and transfering them if autocompound is enabled)

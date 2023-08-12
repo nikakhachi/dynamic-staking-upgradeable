@@ -13,9 +13,11 @@ const main = async () => {
   const StakingFactory = await ethers.getContractFactory("Staking");
   const staking = await upgrades.deployProxy(StakingFactory, [tokenAddress], { kind: "uups" });
 
-  await token.waitForDeployment();
+  await staking.waitForDeployment();
 
   const stakingAddress = await staking.getAddress();
+
+  await staking.setRewards(ethers.parseUnits("1000"), 60 * 24 * 10);
 
   console.log(`Staking Proxy Deployed on Address: ${stakingAddress}`);
 };
