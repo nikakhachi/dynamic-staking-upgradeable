@@ -2,9 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { goerli, localhost } from "wagmi/chains";
+import { goerli, hardhat } from "wagmi/chains";
 import { StakingProvider } from "./contexts/StakingContext.tsx";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
@@ -14,7 +15,7 @@ import { publicProvider } from "wagmi/providers/public";
 //   [import.meta.env.DEV ? publicProvider() : alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_API_KEY as string })]
 // );
 
-const { chains, publicClient } = configureChains([localhost], [publicProvider()]);
+const { chains, publicClient } = configureChains([hardhat], [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
   appName: "dynamic-staking-upgradeable",

@@ -1,10 +1,11 @@
-import "@rainbow-me/rainbowkit/styles.css";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useContext } from "react";
 import { StakingContext } from "../contexts/StakingContext";
 import { getTailwindWidthPercent } from "../utils";
+import { useAccount } from "wagmi";
 
 export const Header = () => {
+  const { address } = useAccount();
   const stakingContext = useContext(StakingContext);
 
   if (!stakingContext) return null;
@@ -17,9 +18,11 @@ export const Header = () => {
 
   return (
     <>
-      <div className="absolute top-2 right-2">
-        <ConnectButton />
-      </div>
+      {address && (
+        <div className="absolute top-2 right-2">
+          <ConnectButton />
+        </div>
+      )}
       <div className="flex flex-col items-center mt-12">
         <p className="text-[#8247e5] text-5xl font-bold text-center">Dynamic Staker Rewards</p>
         <p className="text-white text-2xl tracking-wider mt-3 text-center">

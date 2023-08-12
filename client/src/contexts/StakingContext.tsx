@@ -1,9 +1,10 @@
-import React, { createContext, PropsWithChildren, useEffect } from "react";
-import { useContractRead, useAccount } from "wagmi";
-import { CONTRACT_ABI, CONTRACT_ADDRESS, ERC20_ABI } from "../constants/contract";
+import React, { createContext, PropsWithChildren, useEffect, useState } from "react";
+import { useContractRead, useAccount, useContractWrite } from "wagmi";
+import { CONTRACT_ABI, CONTRACT_ADDRESS, TOKEN_ABI } from "../constants/contract";
 import { bigNumberToNumber, bigNumberToString } from "../utils";
 import { BigNumberish } from "ethers";
 import { FormattedStakerInfoType, RawStakerInfoType } from "../types";
+import { ethers } from "ethers";
 
 type StakingContextType = {
   stakingToken: string;
@@ -14,12 +15,20 @@ type StakingContextType = {
   stakingTokenSymbol: string;
   stakerInfo: FormattedStakerInfoType;
   pendingRewards: string;
+  stakingTokenBalance: string;
+  mintStakingTokenWrite: () => void;
+  stake: () => void;
+  amountToStake: string;
+  setAmountToStake: React.Dispatch<React.SetStateAction<string>>;
+  approve: () => void;
 };
 
 export const StakingContext = createContext<StakingContextType | null>(null);
 
 export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const { address } = useAccount();
+
+  const [amountToStake, setAmountToStake] = useState("1");
 
   const { data: stakingToken } = useContractRead({
     address: CONTRACT_ADDRESS,
@@ -29,9 +38,17 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const { data: stakingTokenSymbol, refetch: fetchStakingTokenSymbol } = useContractRead({
     address: stakingToken as `0x${string}`,
-    abi: ERC20_ABI,
+    abi: TOKEN_ABI,
     functionName: "symbol",
     enabled: false,
+  });
+
+  const { data: stakingTokenBalance, refetch: fetchStakingTokenBalance } = useContractRead({
+    address: stakingToken as `0x${string}`,
+    abi: TOKEN_ABI,
+    functionName: "balanceOf",
+    enabled: false,
+    args: [address],
   });
 
   const { data: rewardFinishAt } = useContractRead({
@@ -52,20 +69,20 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
     functionName: "rewardRate",
   });
 
-  const { data: totalStaked } = useContractRead({
+  const { data: totalStaked, refetch: refetchTotalStaked } = useContractRead({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "totalStaked",
   });
 
-  const { data: stakerInfo } = useContractRead({
+  const { data: stakerInfo, refetch: refetchStakerInfo } = useContractRead({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "getStakerInfo",
     args: [address],
   });
 
-  const { data: pendingRewards } = useContractRead({
+  const { data: pendingRewards, refetch: refetchPendingRewards } = useContractRead({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "viewPendingRewards",
@@ -73,25 +90,75 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
     watch: true,
   });
 
+  const { write: mintStakingTokenWrite, isSuccess: onStakingTokenMintSuccess } = useContractWrite({
+    address: stakingToken as `0x${string}`,
+    abi: TOKEN_ABI,
+    functionName: "mint",
+  });
+
+  const { write: stakeWrite, isSuccess: onStakeSuccess } = useContractWrite({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: "stake",
+    args: [ethers.parseEther(amountToStake)],
+  });
+
+  const { write: approveWrite } = useContractWrite({
+    address: stakingToken as `0x${string}`,
+    abi: TOKEN_ABI,
+    functionName: "approve",
+    args: [CONTRACT_ADDRESS, ethers.parseUnits(amountToStake)],
+  });
+
   useEffect(() => {
     if (stakingToken) {
       fetchStakingTokenSymbol();
+      fetchStakingTokenBalance();
     }
   }, [stakingToken]);
 
+  useEffect(() => {
+    if (onStakingTokenMintSuccess) {
+      fetchStakingTokenBalance();
+    }
+  }, [onStakingTokenMintSuccess]);
+
+  useEffect(() => {
+    if (onStakeSuccess) {
+      refetchPendingRewards();
+      refetchStakerInfo();
+      refetchTotalStaked();
+      console.log("success");
+    }
+  }, [onStakeSuccess]);
+
+  const stake = () => {
+    stakeWrite();
+  };
+
+  const approve = () => {
+    approveWrite();
+  };
+
   const value = {
     stakingToken: stakingToken as string,
-    rewardFinishAt: Number((rewardFinishAt as BigNumberish).toString()),
-    rewardStartTime: Number((rewardStartTime as BigNumberish).toString()),
+    rewardFinishAt: Number((rewardFinishAt as BigNumberish)?.toString()),
+    rewardStartTime: Number((rewardStartTime as BigNumberish)?.toString()),
     rewardRate: bigNumberToNumber(rewardRate as BigNumberish),
     totalStaked: bigNumberToNumber(totalStaked as BigNumberish),
     stakingTokenSymbol: stakingTokenSymbol as string,
     stakerInfo: {
       stakedAmount: bigNumberToString((stakerInfo as RawStakerInfoType)?.stakedAmount),
       rewardDebt: bigNumberToString((stakerInfo as RawStakerInfoType)?.rewardDebt),
-      lastRewardTimestamp: Number((stakerInfo as RawStakerInfoType)?.lastRewardTimestamp.toString()),
+      lastRewardTimestamp: Number((stakerInfo as RawStakerInfoType)?.lastRewardTimestamp?.toString()),
     },
     pendingRewards: bigNumberToString(pendingRewards as BigNumberish),
+    stakingTokenBalance: bigNumberToString(stakingTokenBalance as BigNumberish),
+    mintStakingTokenWrite,
+    stake,
+    amountToStake,
+    setAmountToStake,
+    approve,
   };
 
   return <StakingContext.Provider value={value}>{children}</StakingContext.Provider>;

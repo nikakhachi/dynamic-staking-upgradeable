@@ -781,7 +781,7 @@ export const CONTRACT_ABI = [
   },
 ];
 
-export const ERC20_ABI = [
+export const TOKEN_ABI = [
   {
     inputs: [
       {
@@ -799,9 +799,24 @@ export const ERC20_ABI = [
         name: "_initialSupply",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "_withdrawableAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_cooldown",
+        type: "uint256",
+      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
+  },
+  {
+    inputs: [],
+    name: "TooManyRequests",
+    type: "error",
   },
   {
     anonymous: false,
@@ -922,6 +937,19 @@ export const ERC20_ABI = [
   },
   {
     inputs: [],
+    name: "cooldown",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "decimals",
     outputs: [
       {
@@ -978,6 +1006,13 @@ export const ERC20_ABI = [
         type: "bool",
       },
     ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "mint",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -1071,6 +1106,38 @@ export const ERC20_ABI = [
       },
     ],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "withdrawableAmount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "withdrawalTimes",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ];
