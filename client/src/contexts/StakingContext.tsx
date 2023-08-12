@@ -21,6 +21,8 @@ type StakingContextType = {
   amountToStake: string;
   setAmountToStake: React.Dispatch<React.SetStateAction<string>>;
   approve: () => void;
+  getRewardsWrite: () => void;
+  withdrawWrite: () => void;
 };
 
 export const StakingContext = createContext<StakingContextType | null>(null);
@@ -110,6 +112,19 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
     args: [CONTRACT_ADDRESS, ethers.parseUnits(amountToStake)],
   });
 
+  const { write: getRewardsWrite, isSuccess: onGetRewardsSuccess } = useContractWrite({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: "getRewards",
+  });
+
+  const { write: withdrawWrite, isSuccess: onWithdrawSuccess } = useContractWrite({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: "withdraw",
+    args: [(stakerInfo as RawStakerInfoType)?.stakedAmount],
+  });
+
   useEffect(() => {
     if (stakingToken) {
       fetchStakingTokenSymbol();
@@ -124,13 +139,12 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }, [onStakingTokenMintSuccess]);
 
   useEffect(() => {
-    if (onStakeSuccess) {
+    if (onStakeSuccess || onGetRewardsSuccess || onWithdrawSuccess) {
       refetchPendingRewards();
       refetchStakerInfo();
       refetchTotalStaked();
-      console.log("success");
     }
-  }, [onStakeSuccess]);
+  }, [onStakeSuccess, onGetRewardsSuccess, onWithdrawSuccess]);
 
   const stake = () => {
     stakeWrite();
@@ -159,6 +173,8 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
     amountToStake,
     setAmountToStake,
     approve,
+    getRewardsWrite,
+    withdrawWrite,
   };
 
   return <StakingContext.Provider value={value}>{children}</StakingContext.Provider>;

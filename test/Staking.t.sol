@@ -179,9 +179,8 @@ contract StakingTest is Test {
 
         skip(REWARD_DURATION / 4);
 
-        uint totalRewards = staking.viewPendingRewards(staker1);
         vm.prank(staker1);
-        staking.getRewards(totalRewards);
+        staking.getRewards();
 
         skip(REWARD_DURATION / 4);
 

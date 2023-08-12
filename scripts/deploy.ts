@@ -1,6 +1,8 @@
 import { upgrades, ethers } from "hardhat";
 
 const main = async () => {
+  await ethers.provider.send("evm_setIntervalMining", [12000]);
+
   const TokenFactory = await ethers.getContractFactory("Token");
   const token = await TokenFactory.deploy("Test Token", "TST", ethers.parseEther("1000000"), ethers.parseUnits("100"), 60);
 
@@ -17,7 +19,7 @@ const main = async () => {
 
   const stakingAddress = await staking.getAddress();
 
-  await staking.setRewards(ethers.parseUnits("1000"), 60 * 24 * 10);
+  await staking.setRewards(ethers.parseUnits("1000"), 60 * 24);
 
   console.log(`Staking Proxy Deployed on Address: ${stakingAddress}`);
 };

@@ -296,13 +296,7 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amount",
-        type: "uint256",
-      },
-    ],
+    inputs: [],
     name: "getRewards",
     outputs: [],
     stateMutability: "nonpayable",

@@ -98,15 +98,14 @@ contract Staking is
     }
 
     /// @notice Claim the rewards in wallet
-    /// @param _amount The amount of tokens to be claimed
-    function getRewards(uint256 _amount) external {
+    function getRewards() external {
         StakerInfo storage staker = stakers[msg.sender];
 
         _handleRewards(staker);
 
-        staker.rewardDebt -= _amount;
+        _mint(msg.sender, staker.rewardDebt);
 
-        _mint(msg.sender, _amount);
+        staker.rewardDebt = 0;
     }
 
     /// @notice Get the staker info
