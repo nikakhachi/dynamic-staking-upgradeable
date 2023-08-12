@@ -10,12 +10,10 @@ import { StakingProvider } from "./contexts/StakingContext.tsx";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-// const { chains, publicClient } = configureChains(
-//   [import.meta.env.DEV ? localhost : goerli],
-//   [import.meta.env.DEV ? publicProvider() : alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_API_KEY as string })]
-// );
-
-const { chains, publicClient } = configureChains([hardhat], [publicProvider()]);
+const { chains, publicClient } = configureChains(
+  [import.meta.env.DEV ? hardhat : goerli],
+  [import.meta.env.DEV ? publicProvider() : alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_API_KEY as string })]
+);
 
 const { connectors } = getDefaultWallets({
   appName: "dynamic-staking-upgradeable",
