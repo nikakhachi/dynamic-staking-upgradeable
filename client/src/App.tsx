@@ -1,35 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "@rainbow-me/rainbowkit/styles.css";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useContext } from "react";
+import { StakingContext } from "./contexts/StakingContext";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const { address } = useAccount();
+  const stakingContext = useContext(StakingContext);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <ConnectButton />
+      <p>Your Address: {address}</p>
+      <p>Reward Token Address: {stakingContext?.stakingToken}</p>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
