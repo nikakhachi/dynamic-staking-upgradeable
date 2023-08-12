@@ -2,7 +2,7 @@ import { upgrades, ethers } from "hardhat";
 
 const main = async () => {
   const TokenFactory = await ethers.getContractFactory("Token");
-  const token = await TokenFactory.deploy("Test Token", "TST", ethers.parseEther("1000000"));
+  const token = await TokenFactory.deploy("Test Token", "TST", ethers.parseEther("1000000"), ethers.parseUnits("100"), 60);
 
   await token.waitForDeployment();
 

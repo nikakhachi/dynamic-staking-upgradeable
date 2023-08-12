@@ -23,7 +23,13 @@ contract StakingTest is Test {
 
     function setUp() public {
         staking = new Staking();
-        token = new Token("Test Token", "TST", INITIAL_TOKEN_SUPPLY);
+        token = new Token(
+            "Test Token",
+            "TST",
+            INITIAL_TOKEN_SUPPLY,
+            10 ether,
+            60
+        );
         staking.initialize(IERC20Upgradeable(address(token)));
         staking.setRewards(REWARD_AMOUNT, REWARD_DURATION);
     }
