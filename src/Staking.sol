@@ -19,8 +19,16 @@ contract Staking is
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
-    event Staked(address indexed user, uint256 indexed amount);
-    event Withdrawn(address indexed user, uint256 indexed amount);
+    event Staked(
+        address indexed user,
+        uint256 indexed amount,
+        uint256 indexed timestamp
+    );
+    event Withdrawn(
+        address indexed user,
+        uint256 indexed amount,
+        uint256 indexed timestamp
+    );
 
     struct StakerInfo {
         uint256 stakedAmount;
@@ -69,7 +77,7 @@ contract Staking is
         staker.stakedAmount += _amount;
         totalStaked += _amount;
 
-        emit Staked(msg.sender, _amount);
+        emit Staked(msg.sender, _amount, block.timestamp);
     }
 
     /// @notice Function for withdrawing
@@ -84,7 +92,7 @@ contract Staking is
 
         token.safeTransfer(msg.sender, _amount);
 
-        emit Withdrawn(msg.sender, _amount);
+        emit Withdrawn(msg.sender, _amount, block.timestamp);
     }
 
     /// @notice View the pending rewards of the provided address

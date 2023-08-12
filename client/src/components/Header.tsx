@@ -32,7 +32,7 @@ export const Header = () => {
           Stake{" "}
           <a
             className="underline"
-            href={`https://goerli.etherscan.io/address/${stakingContext.stakingToken}`}
+            href={`https://goerli.etherscan.io/token/${stakingContext.stakingToken}`}
             target="_blank"
             rel="noreferrer"
           >
