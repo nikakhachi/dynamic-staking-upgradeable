@@ -12,6 +12,7 @@ const App = () => {
   if (!stakingContext) return null;
 
   const totalRewards = Number(stakingContext.stakerInfo.rewardDebt) + Number(stakingContext.pendingRewards);
+  const hasStakingEnded = stakingContext.rewardFinishAt < moment().unix();
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -53,30 +54,34 @@ const App = () => {
               </button>
             ) : null}
           </div>
-          <div className="w-full h-8 mt-12 text-white flex items-center justify-center">
-            <p className="text-xl mr-3">Stake Amount: </p>
-            <input
-              className="h-full w-full md:w-96 px-2 rounded-md text-black outline-none text-white"
-              type="number"
-              placeholder={`Amount of ${stakingContext.stakingTokenSymbol} to stake`}
-              value={stakingContext.amountToStake}
-              onChange={(e) => stakingContext.setAmountToStake(e.target.value)}
-            />
-          </div>
-          <div className="mt-2">
-            <button
-              onClick={stakingContext.approve}
-              className="text-white border-2 border-[#8247e5] rounded-lg text-md px-8 py-1 hover:bg-[#8247e5] transition-colors ml-2"
-            >
-              Approve
-            </button>{" "}
-            <button
-              onClick={stakingContext.stake}
-              className="text-white border-2 border-[#8247e5] rounded-lg text-md px-8 py-1 hover:bg-[#8247e5] transition-colors ml-2"
-            >
-              Stake
-            </button>
-          </div>
+          {!hasStakingEnded && (
+            <>
+              <div className="w-full h-8 mt-12 text-white flex items-center justify-center">
+                <p className="text-xl mr-3">Stake Amount: </p>
+                <input
+                  className="h-full w-full md:w-96 px-2 rounded-md text-black outline-none text-white"
+                  type="number"
+                  placeholder={`Amount of ${stakingContext.stakingTokenSymbol} to stake`}
+                  value={stakingContext.amountToStake}
+                  onChange={(e) => stakingContext.setAmountToStake(e.target.value)}
+                />
+              </div>
+              <div className="mt-2">
+                <button
+                  onClick={stakingContext.approve}
+                  className="text-white border-2 border-[#8247e5] rounded-lg text-md px-8 py-1 hover:bg-[#8247e5] transition-colors ml-2"
+                >
+                  Approve
+                </button>{" "}
+                <button
+                  onClick={stakingContext.stake}
+                  className="text-white border-2 border-[#8247e5] rounded-lg text-md px-8 py-1 hover:bg-[#8247e5] transition-colors ml-2"
+                >
+                  Stake
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

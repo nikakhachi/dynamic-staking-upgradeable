@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { StakingContext } from "../contexts/StakingContext";
 import { getTailwindWidthPercent } from "../utils";
 import { useAccount } from "wagmi";
+import moment from "moment";
 
 export const Header = () => {
   const { address } = useAccount();
@@ -15,6 +16,8 @@ export const Header = () => {
 
   const currentStakeTimePercentage = ((currentTimestamp - stakingContext.rewardStartTime) / rewardDuration) * 100;
   const totalRewards = rewardDuration * stakingContext.rewardRate;
+
+  const hasStakingEnded = stakingContext.rewardFinishAt < moment().unix();
 
   return (
     <>
@@ -43,10 +46,15 @@ export const Header = () => {
           Total rewards to be given out: {Math.round(totalRewards)} Native Tokens
         </p>
         <div className="flex gap-2 md:gap-0 flex-col md:flex-row justify-between mb-1">
-          <p className="text-white text-xl">
-            Rewards End In {((stakingContext.rewardFinishAt - currentTimestamp) / 60 / 24).toFixed(1)} hours
-          </p>
-          <p className="text-white text-xl">Total Staked: {stakingContext.totalStaked} Tokens</p>
+          {!hasStakingEnded ? (
+            <p className="text-white text-xl">
+              Rewards End In {((stakingContext.rewardFinishAt - currentTimestamp) / 60 / 24).toFixed(1)} hours
+            </p>
+          ) : (
+            <p className="text-white text-xl">Rewards Give Out Has Ended</p>
+          )}
+
+          {!hasStakingEnded && <p className="text-white text-xl">Total Staked: {stakingContext.totalStaked} Tokens</p>}
         </div>
         <div className="mt-3 md:mt-0 mb-5 md:mb-8 text-white w-full rounded-lg h-2 relative bg-white">
           <div className={`bg-[#8247e5] h-full rounded-lg ${getTailwindWidthPercent(currentStakeTimePercentage)}`}></div>
