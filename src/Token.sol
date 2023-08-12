@@ -42,6 +42,6 @@ contract Token is ERC20 {
             revert TooManyRequests();
 
         withdrawalTimes[msg.sender] = block.timestamp + cooldown; /// @dev Set the withdrawal timestamp for the user
-        _mint(address(this), withdrawableAmount); // Mint tokens to the faucet
+        _mint(msg.sender, withdrawableAmount); // Mint tokens to the faucet
     }
 }
