@@ -49,8 +49,8 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
     address: stakingToken as `0x${string}`,
     abi: TOKEN_ABI,
     functionName: "balanceOf",
-    enabled: false,
     args: [address],
+    watch: true,
   });
 
   const { data: rewardFinishAt } = useContractRead({
@@ -71,20 +71,22 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
     functionName: "rewardRate",
   });
 
-  const { data: totalStaked, refetch: refetchTotalStaked } = useContractRead({
+  const { data: totalStaked } = useContractRead({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "totalStaked",
+    watch: true,
   });
 
-  const { data: stakerInfo, refetch: refetchStakerInfo } = useContractRead({
+  const { data: stakerInfo } = useContractRead({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "getStakerInfo",
     args: [address],
+    watch: true,
   });
 
-  const { data: pendingRewards, refetch: refetchPendingRewards } = useContractRead({
+  const { data: pendingRewards } = useContractRead({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "viewPendingRewards",
@@ -92,13 +94,13 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
     watch: true,
   });
 
-  const { write: mintStakingTokenWrite, isSuccess: onStakingTokenMintSuccess } = useContractWrite({
+  const { write: mintStakingTokenWrite } = useContractWrite({
     address: stakingToken as `0x${string}`,
     abi: TOKEN_ABI,
     functionName: "mint",
   });
 
-  const { write: stakeWrite, isSuccess: onStakeSuccess } = useContractWrite({
+  const { write: stakeWrite } = useContractWrite({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "stake",
@@ -112,13 +114,13 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
     args: [CONTRACT_ADDRESS, ethers.parseUnits(amountToStake)],
   });
 
-  const { write: getRewardsWrite, isSuccess: onGetRewardsSuccess } = useContractWrite({
+  const { write: getRewardsWrite } = useContractWrite({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "getRewards",
   });
 
-  const { write: withdrawWrite, isSuccess: onWithdrawSuccess } = useContractWrite({
+  const { write: withdrawWrite } = useContractWrite({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "withdraw",
@@ -131,20 +133,6 @@ export const StakingProvider: React.FC<PropsWithChildren> = ({ children }) => {
       fetchStakingTokenBalance();
     }
   }, [stakingToken]);
-
-  useEffect(() => {
-    if (onStakingTokenMintSuccess) {
-      fetchStakingTokenBalance();
-    }
-  }, [onStakingTokenMintSuccess]);
-
-  useEffect(() => {
-    if (onStakeSuccess || onGetRewardsSuccess || onWithdrawSuccess) {
-      refetchPendingRewards();
-      refetchStakerInfo();
-      refetchTotalStaked();
-    }
-  }, [onStakeSuccess, onGetRewardsSuccess, onWithdrawSuccess]);
 
   const stake = () => {
     stakeWrite();
